@@ -3,53 +3,68 @@
 '''
 Nosey Neighbour, simple automated python script using bash to complete simple enum scripts
 
-For now runs broad nmap, dirb, nikto
+For now runs broad nmap, dirb, nikto. Modify the commands in each file to get a different result.
+ASCII ART: http://patorjk.com/software/taag/#p=display&f=Graffiti&t=Type%20Something%20
+Eg: python ./nosey.py 10.10.1.10
+
+'''
+print '''
+  _   _                        _   _      _       _     _                       
+ | \ | | ___  ___  ___ _   _  | \ | | ___(_) __ _| |__ | |__   ___  _   _ _ __  
+ |  \| |/ _ \/ __|/ _ \ | | | |  \| |/ _ \ |/ _` | '_ \| '_ \ / _ \| | | | '__| 
+ | |\  | (_) \__ \  __/ |_| | | |\  |  __/ | (_| | | | | |_) | (_) | |_| | |    
+ |_| \_|\___/|___/\___|\__, | |_| \_|\___|_|\__, |_| |_|_.__/ \___/ \__,_|_|    
+                       |___/                |___/                               
+
+stickfish V1.0 2019
 
 '''
 import sys, os, time
+import nikto
+import dirb
 
+target = str(sys.argv[1])
 
-class Nosey_neighbor:
+green = 'echo -e "Default \e[32mGreen"'
+red = 'echo -e "Default \e[31mRed"'
+regular = 'echo -e \e[0m'
 
-	def nmap(self, nmap):
-		cmd = 'nmap -Pn -p- -T4 ' + target + ' -vv -oA initial-scan'
-		os.system(cmd)
+def nmap():
+	cmd = 'nmap -Pn -p- -T4 ' + target + ' -vv -oA initial-scan'
+	os.system(cmd)
+		
+nmap()
+print '\n'
+print '-\/-' * 15
+print ' '
+print '[+] Nmap completed...'
+print ' '
+print '[+] Checking for Http(s) ports'
+time.sleep(3)
+print ' '
+http = os.system('cat initial-scan.nmap | grep --color 80/tcp')
+https = os.system('cat initial-scan.nmap | grep --color 443/tcp')
+print ' '
+print '-\/-' * 15
+print ' '
 
-	def dirb(self, cmd2):
-		cmd2 = 'dirb http://' + target + ' -r |tee dirb-initial.txt'
-		cmd3 = 'dirb https://' + target + ' -r |tee dirb-initial.txt'
-		#os.system(cmd)
+if http == 0:
+	print '[+] starting HTTP Dirb directory scan...\n'
+	dirb.dirb_http()
+	print '\n'
+	print '-\/-' * 15
+	print '\n'
+	print '[+] starting HTTP Nikto Scan...\n'
+	nikto.nikto_http()
 
-	def nikto(self, cmd4):
-		cmd4 = 'nikto -host ' + target + ' -port 80 -evasion 5 |tee nikto.txt'
-		cmd5 = 'nikto -host ' + target + ' -port 443 -evasion 5 |tee nikto.txt'
-		#os.system(cmd)
-
-nosey = Nosey_neighbor()
-
-if len(sys.argv) < 2:
-	print 'Usage: ' + sys.argv[1] + ' Host'
+elif https == 0:
+	print '[+] starting HTTPS Dirb directory scan...\n'
+	dirb.dirb_https()
+	print '\n'
+	print '-\/-' * 15
+	print '\n'
+	print '[+] starting HTTPS Nikto Scan...\n'
+	nikto.nikto_https()
 
 else:
-	# Remote Host
-	target = str(sys.argv[1])
-
-	# Initial Scan performed
-	nosey.nmap(target)
-	print '[+] Nmap completed...'
-	time.sleep(5)
-
-	# Grep files and also show output of open HTTP/S
-	print '[+] Checking for Http(s) ports'
-	time.sleep(5)
-	http = os.system('cat initial-scan.nmap | grep --color 80/tcp')
-	https = os.system('cat initial-scan.nmap | grep --color 443/tcp')
-
-	if http:
-		nosey.dirb(cmd2)
-		nosey.nikto(cmd4)
-	elif https:
-		nosey.dirb(cmd3)
-		nosey.nikto(cmd5)
-	else:
-		print 'No HTTP/S ports found, check Nmap results to make sure.'
+	print 'No HTTP/S ports found on standard numbering, check Nmap results to make sure.'
