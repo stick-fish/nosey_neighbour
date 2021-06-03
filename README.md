@@ -1,6 +1,10 @@
 # nosey_neighbour
 <h2>Automated Basic Enumeration script for HTB and others.</h2>
 
+<h1>* Moved everything over to GitLab, currently redoing this basic enum program in Py3 format and adding in additional functionality. *</h1>
+
+https://gitlab.com/stick-fish/nosey_neighbour
+
 <h5>Assumes Kali / ParrotOS distro which includes: Dirb, Nikto, Nmap, Enum4linux</h5>
 
 **Installation is easy:**
