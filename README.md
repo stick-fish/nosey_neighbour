@@ -1,3 +1,7 @@
+**NOTE: In process of moving over to GitLab, the project was updated here to replace current version. But will be maintained on following link: 
+https://gitlab.com/stick-fish/nosey_neighbour 
+If you like this and want to see future updates, please join me on above link.**
+
 <h1>Nosey Neighbour</h1>
 _Everyone has 1_
 
